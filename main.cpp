@@ -11,6 +11,7 @@ struct node{//Create a student struct
   int value;
   struct node *left = NULL;
   struct node *right = NULL;
+  struct node *parent = NULL;
 };
 
 void add(node* &head);
@@ -18,7 +19,7 @@ void fadd(node* curr, node* n, int input);
 void display(node* head, int depth);
 void manadd(node* &head);
 bool search(node* head, int goal, node* &goaln);
-void remove(node* curr, int goal);
+void remove(node* &head, int goal);
 
 int main(){
   srand(time(0));
@@ -65,14 +66,88 @@ int main(){
   return 0;
 }
 
-void remove(node* curr, int goal){
+void remove(node* &head, int goal){
   node* goaln;//pointer to hold the goal node's adress
-  if(!search(curr, goal, goaln)){
+  bool n;
+  if(!search(head, goal, goaln)){
     cout << "Input a valid number" << endl;
     return;
   }
-  goaln->value = -10;
-  
+  node* parent = goaln->parent;
+
+  if(goaln != head){
+    if(parent->left == goaln){
+      n = true;
+    }
+    else{
+      n = false;
+    }//If n is ture curr is left of parent
+  }
+  if(goaln == head){
+    if(goaln ->right == NULL && goaln->left == NULL){
+      head = NULL;
+      return;
+    }
+    else if(goaln->right != NULL && goaln->left != NULL){
+      node * temp = goaln->right;
+      while(temp->left != NULL){
+	temp = temp->left;
+      }
+      goaln->value = temp->value;
+      if(temp == goaln->right){
+	goaln ->right = goaln->right->right;
+      }
+      return;
+    }
+    if(head->right == NULL){
+      head = head->left;
+    }
+    else{
+      head = head->right;
+    }
+  }
+  else{
+    if(goaln->right == NULL && goaln->left == NULL){
+      if(n){
+	parent->left = NULL;
+      }
+      else{
+	parent->right = NULL;
+      }
+      return;
+    }
+    else if(goaln->right != NULL && goaln->left != NULL){
+      node * temp = goaln->right;
+      while(temp->left != NULL){
+    temp = temp->left;
+      }
+      goaln->value = temp->value;
+      temp->parent->left = NULL;
+      if(temp == goaln->right){
+	goaln ->right = goaln->right->right;
+      }
+      return;
+    }
+    else{
+      if(n){
+	if(goaln->left == NULL){
+	  parent->left = goaln->right;
+	}
+	else{
+	  parent->left = goaln->left;
+	}
+      }
+      else{
+	if(goaln->left == NULL){
+	  parent->right = goaln->right;
+	}
+	else{
+	  parent->right = goaln->left;
+	}
+      }
+      return;
+    } 
+  }
 }
 
 
@@ -93,17 +168,16 @@ void display(node* head, int depth){
 
 bool search(node* head, int goal, node* &goaln){
   bool n = false;
-  node* temp;
   if(head->value == goal){
     goaln = head;
     return true;
   }
   else{
     if(head->right != NULL && goal > head->value){//If there is a right call print on the right
-      n = search(head->right, goal, temp);
+      n = search(head->right, goal, goaln);
     }
     else if(head->left != NULL && goal <= head->value){//If there is a right call print on the right
-      n = search(head->left, goal, temp);
+      n = search(head->left, goal, goaln);
     }
     if(n){
       return true;
@@ -138,6 +212,7 @@ void add(node* &head){
     node* n = new node();
     n->value = num2; 
     if(head == NULL){
+      n->parent = NULL;
       head = n;
     }
     else{
@@ -169,9 +244,11 @@ void fadd(node* curr, node* n, int input){
   }
   else{
     if(input > curr->value){
+      n->parent = curr;
       curr->right = n;
     }
     if(input <= curr->value){
+      n->parent = curr;
       curr->left = n;
     }
   }
