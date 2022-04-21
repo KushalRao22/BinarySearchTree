@@ -1,3 +1,11 @@
+/*
+This is a class that emulates a Binary Search Tree
+
+By: Kushal Rao
+
+Last Modified: 4/21/22
+*/
+//Imports
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -7,19 +15,20 @@
 
 using namespace std;
 
-struct node{//Create a student struct
+struct node{//Create a node struct
   int value;
   struct node *left = NULL;
   struct node *right = NULL;
   struct node *parent = NULL;
 };
 
+//Methods
 void add(node* &head);
-void fadd(node* curr, node* n, int input);
 void display(node* head, int depth);
+void fadd(node* curr, node* n, int input);
 void manadd(node* &head);
-bool search(node* head, int goal, node* &goaln);
 void remove(node* &head, int goal);
+bool search(node* head, int goal, node* &goaln);
 
 int main(){
   srand(time(0));
@@ -35,7 +44,7 @@ int main(){
     if(strcmp(input,"ADD") == 0){//If user wants to add students
       add(head);
     }
-    if(strcmp(input,"SEARCH") == 0){//If user wants to add students
+    if(strcmp(input,"SEARCH") == 0){//If user wants to search students
       int num;
       cout << "What number do you want to look for" << endl;
       cin >> num;
@@ -49,14 +58,14 @@ int main(){
 	cout << "Not there" << endl;
       }
     }
-    if(strcmp(input,"REMOVE") == 0){//If user wants to remove from heap, printing it out in the process
+    if(strcmp(input,"REMOVE") == 0){//If user wants to remove
       int num;
       cout << "What number do you want to look for" << endl;
       cin >> num;
       cin.clear();
       remove(head, num);
     }
-    else if(strcmp(input, "DISPLAY")==0){//Dislay the heap as a tree
+    else if(strcmp(input, "DISPLAY")==0){//Dislay as a tree
       display(head, 0);
     }
     else if(strcmp(input,"QUIT") == 0){//If user wants to quit
@@ -69,13 +78,12 @@ int main(){
 void remove(node* &head, int goal){
   node* goaln;//pointer to hold the goal node's adress
   bool n;
-  if(!search(head, goal, goaln)){
+  if(!search(head, goal, goaln)){//Check if a node with that value exists and find the pointer for it
     cout << "Input a valid number" << endl;
     return;
   }
   node* parent = goaln->parent;
-
-  if(goaln != head){
+  if(goaln != head){//If the node that is to be removed is the not the root
     if(parent->left == goaln){
       n = true;
     }
@@ -83,31 +91,29 @@ void remove(node* &head, int goal){
       n = false;
     }//If n is ture curr is left of parent
   }
-  if(goaln == head){
+  if(goaln == head){//If there is nothing but the root remove the root
     if(goaln ->right == NULL && goaln->left == NULL){
       head = NULL;
       return;
     }
-    else if(goaln->right != NULL && goaln->left != NULL){
+    else if(goaln->right != NULL && goaln->left != NULL){//If there is a right and left
       node * temp = goaln->right;
       while(temp->left != NULL){
 	temp = temp->left;
       }
       goaln->value = temp->value;
-      if(temp == goaln->right){
-	goaln ->right = goaln->right->right;
-      }
+      temp->parent->right = temp->right;
       return;
     }
-    if(head->right == NULL){
+    if(head->right == NULL){//If there only is a right
       head = head->left;
     }
-    else{
+    else{//If there only is a left
       head = head->right;
     }
   }
-  else{
-    if(goaln->right == NULL && goaln->left == NULL){
+  else{//If the goal node is not the root
+    if(goaln->right == NULL && goaln->left == NULL){//If both are null set the parents pointer that would point to the goal node to NULL
       if(n){
 	parent->left = NULL;
       }
@@ -116,19 +122,18 @@ void remove(node* &head, int goal){
       }
       return;
     }
-    else if(goaln->right != NULL && goaln->left != NULL){
+    else if(goaln->right != NULL && goaln->left != NULL){//If there is a both right and left
       node * temp = goaln->right;
       while(temp->left != NULL){
     temp = temp->left;
       }
       goaln->value = temp->value;
-      temp->parent->left = NULL;
       if(temp == goaln->right){
 	goaln ->right = goaln->right->right;
       }
       return;
     }
-    else{
+    else{//If there is only one child
       if(n){
 	if(goaln->left == NULL){
 	  parent->left = goaln->right;
@@ -150,10 +155,7 @@ void remove(node* &head, int goal){
   }
 }
 
-
-
-
-void display(node* head, int depth){
+void display(node* head, int depth){//Display method
   if(head->right != NULL){//If there is a right call print on the right
     display(head->right, depth + 1);
   }
@@ -166,20 +168,20 @@ void display(node* head, int depth){
   }
 }
 
-bool search(node* head, int goal, node* &goaln){
+bool search(node* head, int goal, node* &goaln){//Look for the node that has a certain value
   bool n = false;
-  if(head->value == goal){
+  if(head->value == goal){//If current is the goal node
     goaln = head;
     return true;
   }
   else{
-    if(head->right != NULL && goal > head->value){//If there is a right call print on the right
+    if(head->right != NULL && goal > head->value){//If there is a right call search on the right
       n = search(head->right, goal, goaln);
     }
-    else if(head->left != NULL && goal <= head->value){//If there is a right call print on the right
+    else if(head->left != NULL && goal <= head->value){//If there is a right call search on the right
       n = search(head->left, goal, goaln);
     }
-    if(n){
+    if(n){//If the node has been found
       return true;
     }
   }
@@ -188,7 +190,7 @@ bool search(node* head, int goal, node* &goaln){
 
 
 
-void add(node* &head){
+void add(node* &head){//Add using file
   cout << "How many numbers do you want to add?" << endl;
   int ninput;
   cin >> ninput;
@@ -200,7 +202,7 @@ void add(node* &head){
     int num = (rand() % 50) + 1;
     int num2;
     char temp[100];
-    //Get random number and add it to the array
+    //Get random number and add it 
     while (file.getline(input, 100, ' ')) {
       if (count == num) {
 	strcpy(temp,input);
@@ -235,7 +237,7 @@ void manadd(node* &head){//Add manually
   fadd(head, n, input);
 }
 
-void fadd(node* curr, node* n, int input){
+void fadd(node* curr, node* n, int input){//Add into the right spot
   if(curr->right != NULL && input > curr->value){
     fadd(curr->right, n, input);
   }
