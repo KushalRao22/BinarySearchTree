@@ -1,7 +1,7 @@
 /*
 This is a class that emulates a Binary Search Tree
 By: Kushal Rao
-Last Modified: 4/21/22
+Last Modified: 4/22/22
 */
 //Imports
 #include <iostream>
@@ -126,9 +126,11 @@ void remove(node* &head, int goal){
     temp = temp->left;
       }
       goaln->value = temp->value;
-      temp->parent->right = temp->right;
-      if(temp == goaln->right){
-	goaln ->right = goaln->right->right;
+     if(temp == goaln->right){
+        goaln->right = goaln->right->right;
+     }
+      if(temp->parent->left == temp){
+        temp->parent->left = NULL;
       }
       return;
     }
