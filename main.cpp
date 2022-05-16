@@ -100,7 +100,12 @@ void remove(node* &head, int goal){
 	temp = temp->left;
       }
       goaln->value = temp->value;
-      temp->parent->right = temp->right;
+      if(temp == goaln->right){
+        goaln->right = goaln->right->right;
+      }
+      if(temp->parent->left == temp){
+        temp->parent->left = NULL;
+      }
       return;
     }
     if(head->right == NULL){//If there only is a right
@@ -123,12 +128,12 @@ void remove(node* &head, int goal){
     else if(goaln->right != NULL && goaln->left != NULL){//If there is a both right and left
       node * temp = goaln->right;
       while(temp->left != NULL){
-    temp = temp->left;
+	temp = temp->left;
       }
       goaln->value = temp->value;
-     if(temp == goaln->right){
+      if(temp == goaln->right){
         goaln->right = goaln->right->right;
-     }
+      }
       if(temp->parent->left == temp){
         temp->parent->left = NULL;
       }
